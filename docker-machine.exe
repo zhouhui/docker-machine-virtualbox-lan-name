@@ -1,0 +1,45 @@
+#!/bin/bash
+
+DOCKER_MACHINE=$DOCKER_TOOLBOX_INSTALL_PATH/docker-machine.exe
+"$DOCKER_MACHINE" $@
+
+if [ $1 = 'create' ];then
+	NODE_NAME=${@: -1}
+	if [ $NODE_NAME = 'default' ]; then 
+		echo "(Extension-default) set static ip 192.168.99.10"
+		echo 'kill `more /var/run/udhcpc.eth1.pid`; sudo ifconfig eth1 192.168.99.10 netmask 255.255.255.0 broadcast 192.168.99.255 up' | "$DOCKER_MACHINE" ssh default 'sudo tee /var/lib/boot2docker/bootsync.sh > /dev/null'
+		
+		echo "(Extension-default) restarting..."
+		"$DOCKER_MACHINE" restart default
+		
+		echo "(Extension-default) re-provisioning..."
+		"$DOCKER_MACHINE" provision default
+		
+		echo "(Extension-default) editting /var/lib/boot2docker/dnsmasq.conf"
+		"$DOCKER_MACHINE" ssh default """ echo '''interface=eth1
+listen-address=0.0.0.0
+no-hosts
+dhcp-range=192.168.99.151,192.168.99.200,48h
+dhcp-option=3
+domain=lab.com
+
+address=/default/192.168.99.10
+address=/default.lab.com/192.168.99.10
+
+dhcp-host=mgr1,192.168.99.91,infinite
+dhcp-host=mgr2,192.168.99.92,infinite
+dhcp-host=mgr3,192.168.99.93,infinite
+dhcp-host=mgr4,192.168.99.94,infinite
+dhcp-host=mgr5,192.168.99.95,infinite
+''' | sudo tee /var/lib/boot2docker/dnsmasq.conf > /dev/null;"""
+		
+		echo "(Extension-default) starting dnsmasq"
+		"$DOCKER_MACHINE" ssh default 'docker run -d --restart=always --name dnsmasq --net=host --cap-add=NET_ADMIN -v /var/lib/boot2docker/dnsmasq.conf:/etc/dnsmasq.conf andyshinn/dnsmasq:2.75'
+	else
+		echo "(Extension-${NODE_NAME}) disable dhcp client of eth0"
+		echo 'kill `more /var/run/udhcpc.eth0.pid`; echo "nameserver 192.168.99.10" > /etc/resolv.conf' | "$DOCKER_MACHINE" ssh $NODE_NAME 'sudo tee /var/lib/boot2docker/bootsync.sh > /dev/null'
+		
+		echo "(Extension-${NODE_NAME}) restarting..."
+		"$DOCKER_MACHINE" restart $NODE_NAME
+	fi
+fi
