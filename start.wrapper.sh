@@ -25,7 +25,7 @@ export -f docker-machine
 
 # always using original docker-machine
 Docker-machine () {
-  "$(echo $DOCKER_TOOLBOX_INSTALL_PATH/docker-machine.exe)" "$@"
+  "$DOCKER_TOOLBOX_INSTALL_PATH/docker-machine.exe" "$@"
 }
 
 export -f Docker-machine
