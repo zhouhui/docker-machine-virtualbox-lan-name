@@ -3,7 +3,7 @@
 export WRAPPER_PATH=`pwd`
 
 # use this one instead of default ~/.docker if you want
-export MACHINE_STORAGE_PATH="/d/workspaces/virtualbox/docker"
+# export MACHINE_STORAGE_PATH="/d/workspaces/virtualbox/docker"
 
 # prevent docker-machine from starting virtualbox dhcp service
 export VIRTUALBOX_HOSTONLY_NO_DHCP=true
