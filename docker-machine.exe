@@ -1,6 +1,8 @@
 #!/bin/bash
+# this is a cheet script for docker-machine.exe which is used in start.sh of Docker Toolbox
 
 DOCKER_MACHINE=$DOCKER_TOOLBOX_INSTALL_PATH/docker-machine.exe
+
 "$DOCKER_MACHINE" $@
 
 if [ $1 = 'create' ];then
@@ -20,12 +22,14 @@ if [ $1 = 'create' ];then
 listen-address=0.0.0.0
 no-hosts
 dhcp-range=192.168.99.151,192.168.99.200,48h
-dhcp-option=3
+dhcp-option=3 # disable setting gateway
 domain=lab.com
 
+# make this host named 'default' can be reached from other hosts
 address=/default/192.168.99.10
 address=/default.lab.com/192.168.99.10
 
+# for docker swarm manager nodes which require static ip
 dhcp-host=mgr1,192.168.99.91,infinite
 dhcp-host=mgr2,192.168.99.92,infinite
 dhcp-host=mgr3,192.168.99.93,infinite
