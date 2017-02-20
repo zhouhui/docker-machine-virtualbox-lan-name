@@ -45,5 +45,8 @@ dhcp-host=mgr5,192.168.99.95,infinite
 		
 		echo "(Extension-${NODE_NAME}) restarting..."
 		"$DOCKER_MACHINE" restart $NODE_NAME
+		
+		echo "(Extension-${NODE_NAME}) re-provisioning..."
+		"$DOCKER_MACHINE" provision $NODE_NAME
 	fi
 fi

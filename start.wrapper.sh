@@ -3,7 +3,7 @@
 export WRAPPER_PATH=`pwd`
 
 # use this one instead of default ~/.docker if you want
-# export MACHINE_STORAGE_PATH="/d/workspaces/virtualbox/docker"
+export MACHINE_STORAGE_PATH="/d/workspaces/virtualbox/docker"
 
 # prevent docker-machine from starting virtualbox dhcp service
 export VIRTUALBOX_HOSTONLY_NO_DHCP=true
@@ -12,7 +12,7 @@ export VIRTUALBOX_HOSTONLY_NO_DHCP=true
 # export VIRTUALBOX_SHARE_FOLDER=""
 
 # make virtualbox shell commands be able to access
-export PATH=$PATH:$VBOX_MSI_INSTALL_PATH
+export PATH=$PATH:$VBOX_MSI_INSTALL_PATH:$WRAPPER_PATH  
 
 # cheet docker-machine
 # if you want to use original docker-machine please type 'Docker-machine' instead
@@ -29,6 +29,11 @@ Docker-machine () {
 }
 
 export -f Docker-machine
+
+quick-create-machine () {
+  docker-machine create -d virtualbox --engine-registry-mirror https://registry.wsqueue.tk:5000 "$@"
+}
+export -f quick-create-machine
 
 . "/c/Program Files/Docker Toolbox/start.sh"
 
